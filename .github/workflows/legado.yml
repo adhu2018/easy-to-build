@@ -23,12 +23,13 @@ jobs:
       VERSION: ${{ needs.prepare.outputs.version }}
       VERSIONL: ${{ needs.prepare.outputs.versionL }}
     steps:
-      - name: clone legado repo
+      - name: clone repo
         uses: actions/checkout@v4
         with:
           repository: gedoor/legado
           fetch-depth: 0
-      - name: Set up JDK 17
+
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -39,60 +40,47 @@ jobs:
       - name: Clear 18PlusList.txt
         run: |
           echo "清空18PlusList.txt"
-          echo "">$GITHUB_WORKSPACE/app/src/main/assets/18PlusList.txt
+          echo "">./app/src/main/assets/18PlusList.txt
       - name: remove firebase
         run: |
-          sed "/libs.firebase/d"                $GITHUB_WORKSPACE/app/build.gradle -i
-          sed "/firebase/d"                     $GITHUB_WORKSPACE/gradle/libs.versions.toml -i
-          sed "/libs.plugins.google.services/d" $GITHUB_WORKSPACE/app/build.gradle -i
-          sed "/libs.plugins.google.services/d" $GITHUB_WORKSPACE/build.gradle -i
-          rm $GITHUB_WORKSPACE/app/google-services.json
+          sed "/libs.firebase/d"                ./app/build.gradle -i
+          sed "/firebase/d"                     ./gradle/libs.versions.toml -i
+          sed "/libs.plugins.google.services/d" ./app/build.gradle -i
+          sed "/libs.plugins.google.services/d" ./build.gradle -i
+          rm ./app/google-services.json
 
-      - name: Release Apk Sign
+      - name: Apk Sign
         run: |
           echo "给apk增加签名"
-          cp $GITHUB_WORKSPACE/.github/workflows/legado.jks $GITHUB_WORKSPACE/app/legado.jks
-          sed '$a\RELEASE_STORE_FILE=./legado.jks'          $GITHUB_WORKSPACE/gradle.properties -i
-          sed '$a\RELEASE_KEY_ALIAS=legado'                 $GITHUB_WORKSPACE/gradle.properties -i
-          sed '$a\RELEASE_STORE_PASSWORD=gedoor_legado'     $GITHUB_WORKSPACE/gradle.properties -i
-          sed '$a\RELEASE_KEY_PASSWORD=gedoor_legado'       $GITHUB_WORKSPACE/gradle.properties -i
+          cp ./.github/workflows/legado.jks ./app/legado.jks
+          sed '$a\RELEASE_STORE_FILE=./legado.jks'      ./gradle.properties -i
+          sed '$a\RELEASE_KEY_ALIAS=legado'             ./gradle.properties -i
+          sed '$a\RELEASE_STORE_PASSWORD=gedoor_legado' ./gradle.properties -i
+          sed '$a\RELEASE_KEY_PASSWORD=gedoor_legado'   ./gradle.properties -i
+
+      - name: set to beta version
+        run: |
+          echo "设置共存"
+          sed "s/'.release'/'.releaseA'/" ./app/build.gradle -i
+          sed 's/"app_name">阅读/"app_name">阅读A/' ./app/src/main/res/values-zh/strings.xml -i
+          sed 's/"receiving_shared_label">阅读/"receiving_shared_label">阅读A/' ./app/src/main/res/values-zh/strings.xml -i
 
       - name: Build With Gradle
         continue-on-error: true
         run: |
-          echo "设置共存"
-          sed "s/'.release'/'.releaseA'/" $GITHUB_WORKSPACE/app/build.gradle -i
-          sed 's/"app_name">阅读/"app_name">阅读A/' $GITHUB_WORKSPACE/app/src/main/res/values-zh/strings.xml -i
-          sed 's/"receiving_shared_label">阅读/"receiving_shared_label">阅读A/' $GITHUB_WORKSPACE/app/src/main/res/values-zh/strings.xml -i
           echo "统一版本号"
-          sed "/def version/c def version = \"${{ env.VERSION }}\"" $GITHUB_WORKSPACE/app/build.gradle -i
+          sed "/def version/c def version = \"${{ env.VERSION }}\"" ./app/build.gradle -i
           echo "开始构建"
           chmod +x gradlew
           ./gradlew assembleapprelease --build-cache --parallel --no-daemon --warning-mode all
+
+      - name: move apk
+        run: |
           echo "修改APK文件名"
           mkdir -p ${{ github.workspace }}/apk/
           for file in `ls ${{ github.workspace }}/app/build/outputs/apk/*/*/*.apk`; do
             mv "$file" ${{ github.workspace }}/apk/legado_app_releaseA_${{ env.VERSIONL }}.apk
           done
-          echo "移动mapping文件"
-          mkdir -p ${{ github.workspace }}/mapping/
-          for file in `ls ${{ github.workspace }}/app/build/outputs/mapping/*/mapping.txt`; do
-            mv "$file" ${{ github.workspace }}/mapping/mapping.txt
-          done
-
-      - name: Move Missing Rules Files
-        run: |
-          echo "移动missing_rules.txt文件"
-          mkdir -p ${{ github.workspace }}/mapping/
-          for file in `ls ${{ github.workspace }}/app/build/outputs/mapping/*/missing_rules.txt`; do
-            mv "$file" ${{ github.workspace }}/mapping/missing_rules.txt
-          done
-      - name: Upload Missing Rules File To Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: legado.app.releaseA.mapping.missing_rules
-          if-no-files-found: ignore
-          path: ${{ github.workspace }}/mapping/missing_rules.txt
 
       - name: Check Build production
         run: |
@@ -108,10 +96,3 @@ jobs:
           name: legado.app.releaseA
           if-no-files-found: ignore
           path: ${{ github.workspace }}/apk/*.apk
-
-      - name: Upload Mapping File To Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: legado.app.releaseA.mapping
-          if-no-files-found: ignore
-          path: ${{ github.workspace }}/mapping/mapping.txt

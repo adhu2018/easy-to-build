@@ -18,6 +18,7 @@ jobs:
         with:
           path: './repo'
           fetch-depth: 1
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
@@ -26,21 +27,21 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Release Apk Sign
+      - name: Apk Sign
         run: |
           echo "给apk增加签名"
-          cp $GITHUB_WORKSPACE/repo/.github/workflows/easy-to-build.jks $GITHUB_WORKSPACE/android/easy-to-build.jks
-          sed '$a\RELEASE_STORE_FILE=./easy-to-build.jks'               $GITHUB_WORKSPACE/gradle.properties -i
-          sed '$a\RELEASE_KEY_ALIAS=easy-to-build'                      $GITHUB_WORKSPACE/gradle.properties -i
-          sed '$a\RELEASE_STORE_PASSWORD=easy-to-build'                 $GITHUB_WORKSPACE/gradle.properties -i
-          sed '$a\RELEASE_KEY_PASSWORD=easy-to-build'                   $GITHUB_WORKSPACE/gradle.properties -i
+          cp ./repo/.github/workflows/easy-to-build.jks ./android/easy-to-build.jks
+          sed '$a\RELEASE_STORE_FILE=./easy-to-build.jks'               ./gradle.properties -i
+          sed '$a\RELEASE_KEY_ALIAS=easy-to-build'                      ./gradle.properties -i
+          sed '$a\RELEASE_STORE_PASSWORD=easy-to-build'                 ./gradle.properties -i
+          sed '$a\RELEASE_KEY_PASSWORD=easy-to-build'                   ./gradle.properties -i
 
       - name: set to beta version
         run: |
           echo "设置共存"
-          sed "s/io.anuke.mindustry/io.anuke.mindustry.beta/" $GITHUB_WORKSPACE/android/build.gradle -i
-          sed "s/io.anuke.mindustry/io.anuke.mindustry.beta/" $GITHUB_WORKSPACE/android/AndroidManifest.xml -i
-          sed "s/Mindustry/Mindustry Beta/" android/res/values/strings.xml -i
+          sed "s/io.anuke.mindustry/io.anuke.mindustry.beta/" ./android/build.gradle -i
+          sed "s/io.anuke.mindustry/io.anuke.mindustry.beta/" ./android/AndroidManifest.xml -i
+          sed "s/Mindustry/Mindustry Beta/"                   ./android/res/values/strings.xml -i
 
       - name: Build With Gradle
         continue-on-error: true
