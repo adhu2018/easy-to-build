@@ -45,6 +45,7 @@ jobs:
         run: |
           sed "/libs.firebase/d"                ./app/build.gradle -i
           sed "/firebase/d"                     ./gradle/libs.versions.toml -i
+          sed "/google-services/d"              ./gradle/libs.versions.toml -i
           sed "/libs.plugins.google.services/d" ./app/build.gradle -i
           sed "/libs.plugins.google.services/d" ./build.gradle -i
           rm ./app/google-services.json
