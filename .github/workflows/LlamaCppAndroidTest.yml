@@ -36,7 +36,7 @@ jobs:
       - name: Apk Sign
         run: |
           echo "给apk增加签名"
-          cp ./repo/.github/workflows/easy-to-build.jks ./android/easy-to-build.jks
+          cp ./repo/.github/workflows/easy-to-build.jks ./app/easy-to-build.jks
           sed '$a\RELEASE_STORE_FILE=./easy-to-build.jks'               ./gradle.properties -i
           sed '$a\RELEASE_KEY_ALIAS=easy-to-build'                      ./gradle.properties -i
           sed '$a\RELEASE_STORE_PASSWORD=easy-to-build'                 ./gradle.properties -i
