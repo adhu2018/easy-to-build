@@ -40,7 +40,7 @@ jobs:
           sed '$a\RELEASE_STORE_FILE=./easy-to-build.jks'               ./gradle.properties -i
           sed '$a\RELEASE_KEY_ALIAS=easy-to-build'                      ./gradle.properties -i
           sed '$a\RELEASE_STORE_PASSWORD=easy-to-build'                 ./gradle.properties -i
-          sed '$a\RELEASE_KEY_PASSWORD=easy-to-build'          ./android/res/values/strings.xml -i
+          sed '$a\RELEASE_KEY_PASSWORD=easy-to-build'                   ./gradle.properties -i
 
       - name: Build With Gradle
         continue-on-error: true
