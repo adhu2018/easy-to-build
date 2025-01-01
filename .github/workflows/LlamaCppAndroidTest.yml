@@ -6,7 +6,7 @@ on:
 jobs:
 
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: clone repo
         uses: actions/checkout@v4
@@ -41,6 +41,11 @@ jobs:
           sed '$a\RELEASE_KEY_ALIAS=easy-to-build'                      ./gradle.properties -i
           sed '$a\RELEASE_STORE_PASSWORD=easy-to-build'                 ./gradle.properties -i
           sed '$a\RELEASE_KEY_PASSWORD=easy-to-build'                   ./gradle.properties -i
+
+      - name: test
+        run: |
+          sed "/target_link_libraries/c set_target_properties(libllava_shared PROPERTIES OUTPUT_NAME \"libllava_shared\")\ntarget_link_libraries" ./llama/src/main/cpp/CMakeLists.txt  -i
+          cat ./llama/src/main/cpp/CMakeLists.txt
 
       - name: Build With Gradle
         continue-on-error: true
