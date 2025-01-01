@@ -41,7 +41,7 @@ jobs:
           sed '$a\RELEASE_KEY_ALIAS=easy-to-build'                      ./gradle.properties -i
           sed '$a\RELEASE_STORE_PASSWORD=easy-to-build'                 ./gradle.properties -i
           sed '$a\RELEASE_KEY_PASSWORD=easy-to-build'                   ./gradle.properties -i
-          sed "/defaultConfig/c signingConfigs {\nif (project.hasProperty(\"RELEASE_STORE_FILE\")){\nmyConfig {\nstoreFile file(RELEASE_STORE_FILE)\nstorePassword RELEASE_STORE_PASSWORD\nkeyAlias RELEASE_KEY_ALIAS\nkeyPassword RELEASE_KEY_PASSWORD\nv1SigningEnabled true\nv2SigningEnabled true\nenableV3Signing=true\nenableV4Signing=true}}}\ndefaultConfig" ./app/build.gradle -i
+          sed "/defaultConfig/c signingConfigs {\nif (project.hasProperty(\"RELEASE_STORE_FILE\")){\nmyConfig {\nstoreFile file(RELEASE_STORE_FILE)\nstorePassword RELEASE_STORE_PASSWORD\nkeyAlias RELEASE_KEY_ALIAS\nkeyPassword RELEASE_KEY_PASSWORD\nv1SigningEnabled true\nv2SigningEnabled true\nenableV3Signing=true\nenableV4Signing=true}}}\ndefaultConfig {" ./app/build.gradle -i
           sed "s/signingConfigs.debug/signingConfigs.myConfig/" ./app/build.gradle -i
           cat ./app/build.gradle
 
