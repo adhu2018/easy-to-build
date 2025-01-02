@@ -45,6 +45,11 @@ jobs:
           sed "s/signingConfigs.debug/signingConfigs.myConfig/" ./app/build.gradle -i
           cat ./app/build.gradle
 
+      - name: patch
+        run: |
+          echo "移除朗读"
+          sed "s/say(it.messages.last().content,context)//" ./app/src/main/java/me/ag2s/app/MainViewModel.kt -i
+
       - name: Build With Gradle
         continue-on-error: true
         run: |
