@@ -91,7 +91,9 @@ jobs:
         continue-on-error: true
         run: |
           echo "统一版本号"
+          gitCommits=$(git rev-list sync --count)
           sed "/def version/c def version = \"${{ env.VERSION }}\"" ./app/build.gradle -i
+          sed "/def gitCommits/c def gitCommits = $gitCommits" ./app/build.gradle -i
           echo "开始构建"
           chmod +x gradlew
           ./gradlew assembleapprelease --build-cache --parallel --no-daemon --warning-mode all
