@@ -91,6 +91,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "统一版本号"
+          git fetch --all
           gitCommits=$(git rev-list sync --count)
           sed "/def version/c def version = \"${{ env.VERSION }}\"" ./app/build.gradle -i
           sed "/def gitCommits/c def gitCommits = $gitCommits" ./app/build.gradle -i
