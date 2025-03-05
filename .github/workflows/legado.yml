@@ -2,6 +2,11 @@ name: Legado Test Build
 
 on:
   workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'branch name'
+        required: false
+        type: string
 
 jobs:
 
@@ -38,6 +43,12 @@ jobs:
         with:
           version: latest
           run_install: false
+
+      - name: checkout branch
+        if: ${{ inputs.branch_name && github.actor == 'adhu2018' }}
+        run: |
+          git branch
+          git switch ${{ inputs.branch_name }}
 
       - name: Build web
         working-directory: modules/web
