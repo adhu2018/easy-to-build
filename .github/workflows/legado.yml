@@ -44,7 +44,7 @@ jobs:
         with:
           node-version: latest
           cache: 'pnpm'
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: 'modules/web/package-lock.json'
 
       - name: checkout branch
         if: ${{ inputs.branch_name && github.actor == 'adhu2018' }}
