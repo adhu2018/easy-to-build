@@ -118,8 +118,8 @@ jobs:
       - name: minifyEnabled
         if:  ${{ inputs.debug }}
         run: |
-          sed "/minifyEnabled true/c minifyEnabled false" ./app/build.gradle  -i
-          sed "/shrinkResources true/c shrinkResources false" ./app/build.gradle  -i
+          sed "/minifyEnabled/c minifyEnabled false" ./app/build.gradle  -i
+          sed "/shrinkResources/c shrinkResources = false" ./app/build.gradle  -i
 
       - name: Build With Gradle
         continue-on-error: true
