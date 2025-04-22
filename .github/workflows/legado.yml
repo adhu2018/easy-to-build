@@ -7,6 +7,11 @@ on:
         description: 'branch name'
         required: false
         type: string
+      debug:
+        description: 'is debug'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
 
@@ -109,6 +114,12 @@ jobs:
           sed "s/'.release'/'.releaseA'/" ./app/build.gradle -i
           sed 's/"app_name">阅读/"app_name">阅读A/' ./app/src/main/res/values-zh/strings.xml -i
           sed 's/"receiving_shared_label">阅读/"receiving_shared_label">阅读A/' ./app/src/main/res/values-zh/strings.xml -i
+
+      - name: minifyEnabled
+        if:  ${{ inputs.debug }}
+        run: |
+          sed "/minifyEnabled true/c minifyEnabled false" ./app/build.gradle  -i
+          sed "/shrinkResources true/c shrinkResources false" ./app/build.gradle  -i
 
       - name: Build With Gradle
         continue-on-error: true
