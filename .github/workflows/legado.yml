@@ -126,7 +126,8 @@ jobs:
         run: |
           echo "统一版本号"
           gitCommits=$(git rev-list origin/sync --count)
-          sed "/def version/c def version = \"${{ env.VERSION }}\"" ./app/build.gradle -i
+          realCommits=$(git rev-list HEAD --count)
+          sed "/def version/c def version = \"${{ env.VERSION }}+$realCommits\"" ./app/build.gradle -i
           sed "/def gitCommits/c def gitCommits = $gitCommits" ./app/build.gradle -i
           echo "开始构建"
           chmod +x gradlew
