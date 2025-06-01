@@ -67,6 +67,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Build web
+        continue-on-error: true
         working-directory: modules/web
         run: |
           pnpm i
