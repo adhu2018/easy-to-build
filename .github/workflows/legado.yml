@@ -7,6 +7,11 @@ on:
         description: 'branch name'
         required: false
         type: string
+      build_web:
+        description: 'rebuild web'
+        required: false
+        default: false
+        type: boolean
       debug:
         description: 'is debug'
         required: false
@@ -45,21 +50,25 @@ jobs:
           git switch ${{ inputs.branch_name }}
 
       - name: set up nodejs
+        if:  ${{ inputs.build_web }}
         uses: actions/setup-node@v4
         with:
           node-version: latest
       - name: set up pnpm
+        if:  ${{ inputs.build_web }}
         uses: pnpm/action-setup@v4
         with:
           version: latest
           run_install: false
       - name: Get pnpm store directory
         id: pnpm-cache
+        if:  ${{ inputs.build_web }}
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v4
         name: Setup pnpm cache
+        if:  ${{ inputs.build_web }}
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/web/package.json') }}
@@ -67,6 +76,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Build web
+        if:  ${{ inputs.build_web }}
         continue-on-error: true
         working-directory: modules/web
         run: |
