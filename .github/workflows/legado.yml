@@ -10,7 +10,7 @@ on:
       build_web:
         description: 'rebuild web'
         required: false
-        default: false
+        default: true
         type: boolean
       debug:
         description: 'is debug'
