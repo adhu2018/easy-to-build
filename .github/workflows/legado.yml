@@ -17,6 +17,11 @@ on:
         required: false
         default: false
         type: boolean
+      signature:
+        description: 'use default signature file'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
 
@@ -110,7 +115,8 @@ jobs:
           sed "s/javaCompileOptions/ndk {\nabiFilters 'arm64-v8a'\n}\njavaCompileOptions/" ./app/build.gradle -i
           
 
-      - name: Apk Sign
+      - name: with sign
+        if:  ${{ inputs.signature }}
         run: |
           echo "给apk增加签名"
           cp ./.github/workflows/legado.jks ./app/legado.jks
@@ -118,6 +124,12 @@ jobs:
           sed '$a\RELEASE_KEY_ALIAS=legado'             ./gradle.properties -i
           sed '$a\RELEASE_STORE_PASSWORD=gedoor_legado' ./gradle.properties -i
           sed '$a\RELEASE_KEY_PASSWORD=gedoor_legado'   ./gradle.properties -i
+
+      - name: without sign
+        if:  ${{ ! inputs.signature }}
+        run: |
+          sed 's/signingConfigs.myConfig/null/' ./app/build.gradle -i
+
 
       - name: set to beta version
         run: |
