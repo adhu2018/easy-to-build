@@ -96,6 +96,8 @@ jobs:
           cache: 'gradle'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-overwrite-existing: true
 
       - name: Clear 18PlusList.txt
         run: |
