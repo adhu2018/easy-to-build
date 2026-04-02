@@ -1,0 +1,70 @@
+name: YuyanImeTest Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clone repo
+        uses: actions/checkout@v6
+        with:
+          repository: gurecn/YuyanIme
+          fetch-depth: 1
+          submodules: true
+      - name: clone repo
+        uses: actions/checkout@v6
+        with:
+          path: './repo'
+          fetch-depth: 1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: '8.6'
+
+      - name: Apk Sign
+        run: |
+          echo "给apk增加签名"
+          cp ./repo/.github/workflows/easy-to-build.jks ./app/easy-to-build.jks
+          sed '$a\storeFile=./easy-to-build.jks'               ./gradle.properties -i
+          sed '$a\storePassword=easy-to-build'                 ./gradle.properties -i
+          sed '$a\keyAlias=easy-to-build'                      ./gradle.properties -i
+          sed '$a\keyPassword=easy-to-build'                   ./gradle.properties -i
+
+      - name: Build With Gradle
+        continue-on-error: true
+        run: |
+          echo "开始构建"
+          gradle assembleOffline --build-cache --parallel --no-daemon --warning-mode all
+
+      - name: move apk
+        run: |
+          echo "修改APK文件名"
+          mkdir -p ${{ github.workspace }}/apk/
+          ls ${{ github.workspace }}/app/*/*/*/*/*.apk
+          for file in `ls ${{ github.workspace }}/app/*/*/*/*/*.apk`; do
+            mv "$file" ${{ github.workspace }}/apk/YuyanImeTest.apk
+          done
+
+      - name: Check Build production
+        run: |
+          cd ${{ github.workspace }}/apk/
+          if [ ! -e YuyanImeTest.apk ]; then
+            echo "Build production not found! Check gradle logs."
+            exit 1
+          fi
+
+      - name: Upload App To Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YuyanImeTest
+          if-no-files-found: ignore
+          path: ${{ github.workspace }}/apk/*.apk
