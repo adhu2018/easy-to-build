@@ -35,7 +35,7 @@ jobs:
           echo "给apk增加签名"
           mkdir keystore
           cp ./repo/.github/workflows/easy-to-build.jks ./keystore/easy-to-build.jks
-          echo "storeFile=./easy-to-build.jks" > keystore.properties
+          echo "storeFile=easy-to-build.jks" > keystore.properties
           echo "storePassword=easy-to-build" >> keystore.properties
           echo "keyAlias=easy-to-build" >> keystore.properties
           echo "keyPassword=easy-to-build" >> keystore.properties
