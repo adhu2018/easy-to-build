@@ -33,11 +33,12 @@ jobs:
       - name: Apk Sign
         run: |
           echo "给apk增加签名"
-          cp ./repo/.github/workflows/easy-to-build.jks ./app/easy-to-build.jks
-          sed '$a\storeFile=./easy-to-build.jks'               ./gradle.properties -i
-          sed '$a\storePassword=easy-to-build'                 ./gradle.properties -i
-          sed '$a\keyAlias=easy-to-build'                      ./gradle.properties -i
-          sed '$a\keyPassword=easy-to-build'                   ./gradle.properties -i
+          mkdir keystore
+          cp ./repo/.github/workflows/easy-to-build.jks ./keystore/easy-to-build.jks
+          echo "storeFile=./easy-to-build.jks" > keystore.properties
+          echo "storePassword=easy-to-build" >> keystore.properties
+          echo "keyAlias=easy-to-build" >> keystore.properties
+          echo "keyPassword=easy-to-build" >> keystore.properties
 
       - name: Build With Gradle
         continue-on-error: true
