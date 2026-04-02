@@ -40,6 +40,12 @@ jobs:
           echo "keyAlias=easy-to-build" >> ./keystore/keystore.properties
           echo "keyPassword=easy-to-build" >> ./keystore/keystore.properties
 
+      - name: set to beta version
+        run: |
+          echo "设置共存"
+          sed 's/".release"/".releaseA"/' ./app/build.gradle -i
+          sed 's/"ime_yuyan_name">语燕输入法/"ime_yuyan_name">语燕输入法A/' ./yuyansdk/src/main/res/values/strings.xml -i
+
       - name: Build With Gradle
         continue-on-error: true
         run: |
